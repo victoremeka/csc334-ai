@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Emotion Detection App</h1>
+        </header>
+
+        <main>
+            <div class="camera-section">
+                <video id="video" autoplay playsinline></video>
+                <canvas id="canvas" style="display: none;"></canvas>
+
+                <div class="controls">
+                    <button id="startCamera">Start Camera</button>
+                    <button id="capturePhoto" disabled>Capture</button>
+                    <button id="stopCamera" disabled>Stop</button>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <div id="resultContainer" class="result-container">
+                    <div class="placeholder">
+                        <p>Start camera and capture a photo</p>
+                    </div>
+                </div>
+
+                <div id="loadingIndicator" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Analyzing...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    <footer>Copyright © 2025 Victor Emeka</footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
