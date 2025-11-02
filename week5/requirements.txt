@@ -23,6 +23,8 @@ fsspec==2025.10.0
     # via
     #   huggingface-hub
     #   torch
+gunicorn==21.2.0
+    # via emotion-inference (pyproject.toml)
 huggingface-hub==0.36.0
     # via
     #   tokenizers
@@ -53,6 +55,7 @@ opencv-python==4.12.0.88
     # via emotion-inference (pyproject.toml)
 packaging==25.0
     # via
+    #   gunicorn
     #   huggingface-hub
     #   transformers
 pillow==12.0.0

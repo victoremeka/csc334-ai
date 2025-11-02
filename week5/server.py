@@ -131,4 +131,13 @@ def predict():
         return jsonify({'success': False, 'error': str(e)})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Check if we're in production (Render sets this)
+    import os
+    is_production = os.environ.get('RENDER') == 'true'
+    
+    if is_production:
+        # Production settings - let gunicorn handle the server
+        print("Running in production mode with gunicorn")
+    else:
+        # Development settings
+        app.run(debug=True)

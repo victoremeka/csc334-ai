@@ -11,4 +11,5 @@ dependencies = [
     "pillow",
     "opencv-python",
     "numpy",
+    "gunicorn>=21.2.0",
 ]
