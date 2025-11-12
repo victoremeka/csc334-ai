@@ -29,3 +29,5 @@ imgaug
 # Note: sqlite3 comes pre-installed with Python
 # opencv-python may require additional system dependencies on some platforms
 # For GPU support, replace tensorflow with tensorflow-gpu (requires CUDA)
+
+pandas
