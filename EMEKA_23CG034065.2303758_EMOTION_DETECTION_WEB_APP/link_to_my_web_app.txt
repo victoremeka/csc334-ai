@@ -1,0 +1,81 @@
+EMOTION DETECTION WEB APP - HOSTING INFORMATION
+================================================
+
+HOSTING PLATFORM OPTIONS:
+-------------------------
+
+1. RENDER - https://render.com
+   Steps:
+   - Create account at render.com
+   - Connect GitHub repository
+   - Create new Web Service
+   - Set build command: pip install -r requirements.txt
+   - Set start command: gunicorn app:app
+   - Deploy and get your link
+
+2. HEROKU - https://heroku.com
+   Steps:
+   - Create account at heroku.com
+   - Install Heroku CLI
+   - Run: heroku create your-app-name
+   - Run: git push heroku main
+   - Your link: https://your-app-name.herokuapp.com
+
+3. PYTHON ANYWHERE - https://www.pythonanywhere.com
+   Steps:
+   - Create free account
+   - Upload your files
+   - Configure WSGI file
+   - Your link: https://yourusername.pythonanywhere.com
+
+4. RAILWAY - https://railway.app
+   Steps:
+   - Create account
+   - Connect GitHub
+   - Deploy from repository
+   - Get auto-generated link
+
+5. VERCEL (with serverless functions) - https://vercel.com
+   Your link: https://your-project.vercel.app
+
+6. NGROK (for local testing/demo) - https://ngrok.com
+   Steps:
+   - Download ngrok
+   - Run your Flask app: python app.py
+   - In another terminal: ngrok http 5000
+   - Get temporary public URL
+
+LOCAL TESTING:
+--------------
+Platform: Local Development Server
+Link: http://localhost:5000
+Status: Development mode only (not accessible from internet)
+
+DEPLOYED APP (Example):
+------------------------
+Platform: [Your chosen platform name here]
+Link: [Your deployment link here]
+Status: [Active/Pending/Testing]
+
+INSTRUCTIONS FOR SUBMISSION:
+-----------------------------
+1. Choose one of the hosting platforms above
+2. Deploy your application
+3. Test that it works by accessing the link
+4. Replace the [bracketed text] above with your actual information
+5. Save this file
+
+NOTES:
+------
+- Free tier limitations may apply to some platforms
+- Ensure model.h5 file is uploaded (may need Git LFS for large files)
+- Database will be created automatically on first run
+- For production, consider using PostgreSQL instead of SQLite
+- Make sure all dependencies in requirements.txt are installed on the hosting platform
+
+EXAMPLE FILLED OUT:
+-------------------
+Platform: Render
+Link: https://emotion-detection-app-student.onrender.com
+Status: Active
+Deployment Date: [Current Date]

@@ -1,0 +1,31 @@
+# Emotion Detection Web Application - Required Python Packages
+
+# Core Framework
+Flask
+Werkzeug
+
+# Machine Learning and Computer Vision
+tensorflow
+keras
+opencv-python
+numpy
+Pillow
+
+# Data Processing
+pandas
+scikit-learn
+
+# Visualization
+matplotlib
+seaborn
+
+# Optional: For deployment
+gunicorn
+python-dotenv
+
+# Optional: For data augmentation
+imgaug
+
+# Note: sqlite3 comes pre-installed with Python
+# opencv-python may require additional system dependencies on some platforms
+# For GPU support, replace tensorflow with tensorflow-gpu (requires CUDA)

@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emotion Detection Web App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .user-input {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .user-input label {
+            display: block;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .user-input input[type="text"] {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 20px;
+            font-size: 1em;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .user-input input[type="text"]:focus {
+            border-color: #764ba2;
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .detection-modes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .mode-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .mode-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .mode-card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .mode-card p {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            font-size: 1em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            margin-left: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-upload-label {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .file-upload-label:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .result-container {
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            display: none;
+        }
+
+        .result-container.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-image {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .emotion-result {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .emotion-label {
+            font-size: 2.5em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .confidence {
+            font-size: 1.3em;
+            color: #666;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid #c3e6cb;
+        }
+
+        #video {
+            width: 100%;
+            max-width: 640px;
+            border-radius: 10px;
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        #canvas {
+            display: none;
+        }
+
+        .webcam-controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            display: none;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .history-section {
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+
+        .history-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .history-table th,
+        .history-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .history-table th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        .history-table tr:hover {
+            background: #f1f3f5;
+        }
+
+        .emoji {
+            font-size: 3em;
+            margin: 20px 0;
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .detection-modes {
+                grid-template-columns: 1fr;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎭 Emotion Detection System</h1>
+            <p>Detect emotions from images or live webcam capture using AI</p>
+        </header>
+
+        <div class="main-content">
+            <!-- User Input -->
+            <div class="user-input">
+                <label for="userName">Enter Your Name:</label>
+                <input type="text" id="userName" placeholder="Your Name" value="Student">
+            </div>
+
+            <!-- Detection Modes -->
+            <div class="detection-modes">
+                <!-- Image Upload Mode -->
+                <div class="mode-card">
+                    <h2>📸 Upload Image</h2>
+                    <p>Upload an image file to detect emotions from a photo</p>
+                    <input type="file" id="imageUpload" accept="image/*">
+                    <label for="imageUpload" class="file-upload-label">Choose Image</label>
+                    <div id="uploadFileName" style="margin-top: 10px; color: #666;"></div>
+                </div>
+
+                <!-- Webcam Capture Mode -->
+                <div class="mode-card">
+                    <h2>🎥 Live Webcam</h2>
+                    <p>Capture your emotion in real-time using your webcam</p>
+                    <button class="btn btn-primary" onclick="startWebcam()">Start Webcam</button>
+                    <button class="btn btn-secondary" onclick="stopWebcam()" style="display: none;" id="stopBtn">Stop Webcam</button>
+                </div>
+            </div>
+
+            <!-- Webcam Section -->
+            <div id="webcamSection" style="display: none; margin-top: 30px; text-align: center;">
+                <video id="video" autoplay></video>
+                <canvas id="canvas"></canvas>
+                <div class="webcam-controls">
+                    <button class="btn btn-primary" onclick="captureAndDetect()">📷 Capture & Detect</button>
+                </div>
+            </div>
+
+            <!-- Loading Indicator -->
+            <div class="loading" id="loadingIndicator">
+                <div class="spinner"></div>
+                <p>Processing... Please wait</p>
+            </div>
+
+            <!-- Result Container -->
+            <div class="result-container" id="resultContainer">
+                <h2 style="text-align: center; color: #667eea;">Detection Result</h2>
+                <div class="emotion-result">
+                    <div class="emoji" id="emotionEmoji"></div>
+                    <div class="emotion-label" id="emotionLabel"></div>
+                    <div class="confidence" id="confidenceLevel"></div>
+                </div>
+                <img id="resultImage" class="result-image" src="" alt="Result Image">
+                <div id="messageContainer"></div>
+            </div>
+
+            <!-- History Section -->
+            <div class="history-section">
+                <h2>📊 Recent Detections</h2>
+                <button class="btn btn-primary" onclick="loadHistory()">Load History</button>
+                <table class="history-table" id="historyTable" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Emotion</th>
+                            <th>Confidence</th>
+                            <th>Type</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead></th>
+                    <tbody id="historyBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; 2024 Emotion Detection System | Built with Flask & TensorFlow</p>
+        </footer>
+    </div>
+
+    <script>
+        let stream = null;
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Emotion to Emoji mapping
+        const emotionEmojis = {
+            'Happy': '😊',
+            'Sad': '😢',
+            'Angry': '😠',
+            'Surprise': '😮',
+            'Fear': '😨',
+            'Disgust': '🤢',
+            'Neutral': '😐'
+        };
+
+        // Handle file upload
+        document.getElementById('imageUpload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('uploadFileName').textContent = `Selected: ${file.name}`;
+                uploadAndDetect(file);
+            }
+        });
+
+        // Upload and detect emotion from image
+        function uploadAndDetect(file) {
+            console.log('uploadAndDetect called with file:', file);
+            const userName = document.getElementById('userName').value || 'Anonymous';
+            console.log('User name:', userName);
+            
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('name', userName);
+
+            showLoading();
+            hideResult();
+
+            console.log('Sending request to /detect_from_upload');
+            fetch('/detect_from_upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                hideLoading();
+                if (data.error) {
+                    console.error('Error from server:', data.error);
+                    showError(data.error);
+                } else {
+                    console.log('Success! Showing result');
+                    showResult(data);
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                hideLoading();
+                showError('An error occurred: ' + error.message);
+            });
+        }
+
+        // Start webcam
+        async function startWebcam() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { width: 640, height: 480 } 
+                });
+                video.srcObject = stream;
+                document.getElementById('webcamSection').style.display = 'block';
+                document.getElementById('stopBtn').style.display = 'inline-block';
+                hideResult();
+            } catch (error) {
+                showError('Could not access webcam: ' + error.message);
+            }
+        }
+
+        // Stop webcam
+        function stopWebcam() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                video.srcObject = null;
+                document.getElementById('webcamSection').style.display = 'none';
+                document.getElementById('stopBtn').style.display = 'none';
+            }
+        }
+
+        // Capture and detect from webcam
+        function captureAndDetect() {
+            console.log('captureAndDetect called');
+            const userName = document.getElementById('userName').value || 'Anonymous';
+            console.log('User name:', userName);
+            
+            // Set canvas size to match video
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            console.log('Canvas size:', canvas.width, 'x', canvas.height);
+            
+            // Draw video frame to canvas
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Convert canvas to base64
+            const imageData = canvas.toDataURL('image/jpeg');
+            console.log('Image data length:', imageData.length);
+            
+            showLoading();
+            hideResult();
+
+            console.log('Sending request to /detect_from_webcam');
+            fetch('/detect_from_webcam', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    image: imageData,
+                    name: userName
+                })
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('Response data:', data);
+                hideLoading();
+                if (data.error) {
+                    console.error('Error from server:', data.error);
+                    showError(data.error);
+                } else {
+                    console.log('Success! Showing result');
+                    showResult(data);
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                hideLoading();
+                showError('An error occurred: ' + error.message);
+            });
+        }
+
+        // Show result
+        function showResult(data) {
+            const resultContainer = document.getElementById('resultContainer');
+            const emotionLabel = document.getElementById('emotionLabel');
+            const confidenceLevel = document.getElementById('confidenceLevel');
+            const resultImage = document.getElementById('resultImage');
+            const emotionEmoji = document.getElementById('emotionEmoji');
+            const messageContainer = document.getElementById('messageContainer');
+
+            emotionLabel.textContent = data.emotion;
+            confidenceLevel.textContent = `Confidence: ${data.confidence}%`;
+            resultImage.src = 'data:image/jpeg;base64,' + data.image;
+            emotionEmoji.textContent = emotionEmojis[data.emotion] || '😊';
+
+            messageContainer.innerHTML = `<div class="success-message">${data.message}</div>`;
+
+            resultContainer.classList.add('show');
+        }
+
+        // Hide result
+        function hideResult() {
+            const resultContainer = document.getElementById('resultContainer');
+            const emotionLabel = document.getElementById('emotionLabel');
+            const confidenceLevel = document.getElementById('confidenceLevel');
+            const resultImage = document.getElementById('resultImage');
+            const emotionEmoji = document.getElementById('emotionEmoji');
+            const messageContainer = document.getElementById('messageContainer');
+            
+            // Clear all result data
+            emotionLabel.textContent = '';
+            confidenceLevel.textContent = '';
+            resultImage.src = '';
+            emotionEmoji.textContent = '';
+            messageContainer.innerHTML = '';
+            
+            resultContainer.classList.remove('show');
+        }
+
+        // Show loading
+        function showLoading() {
+            document.getElementById('loadingIndicator').classList.add('show');
+        }
+
+        // Hide loading
+        function hideLoading() {
+            document.getElementById('loadingIndicator').classList.remove('show');
+        }
+
+        // Show error
+        function showError(message) {
+            const resultContainer = document.getElementById('resultContainer');
+            const emotionLabel = document.getElementById('emotionLabel');
+            const confidenceLevel = document.getElementById('confidenceLevel');
+            const resultImage = document.getElementById('resultImage');
+            const emotionEmoji = document.getElementById('emotionEmoji');
+            const messageContainer = document.getElementById('messageContainer');
+            
+            // Clear previous results
+            emotionLabel.textContent = '';
+            confidenceLevel.textContent = '';
+            resultImage.src = '';
+            emotionEmoji.textContent = '';
+            
+            messageContainer.innerHTML = `<div class="error-message">❌ ${message}</div>`;
+            resultContainer.classList.add('show');
+        }
+
+        // Load history
+        function loadHistory() {
+            fetch('/get_history')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert('Error loading history: ' + data.error);
+                } else {
+                    displayHistory(data.history);
+                }
+            })
+            .catch(error => {
+                alert('Error loading history: ' + error.message);
+            });
+        }
+
+        // Display history
+        function displayHistory(history) {
+            const historyTable = document.getElementById('historyTable');
+            const historyBody = document.getElementById('historyBody');
+            
+            historyBody.innerHTML = '';
+            
+            if (history.length === 0) {
+                historyBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No history available</td></tr>';
+            } else {
+                history.forEach(record => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${record.name}</td>
+                        <td>${emotionEmojis[record.emotion] || ''} ${record.emotion}</td>
+                        <td>${record.confidence}%</td>
+                        <td>${record.type}</td>
+                        <td>${record.timestamp}</td>
+                    `;
+                    historyBody.appendChild(row);
+                });
+            }
+            
+            historyTable.style.display = 'table';
+        }
+
+        // Check model status on page load
+        window.addEventListener('load', function() {
+            fetch('/health')
+            .then(response => response.json())
+            .then(data => {
+                if (!data.model_loaded) {
+                    console.warn('Warning: Model not loaded. Please train the model first.');
+                }
+            })
+            .catch(error => {
+                console.error('Error checking server status:', error);
+            });
+        });
+    </script>
+</body>
+</html>

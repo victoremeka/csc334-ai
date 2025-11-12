@@ -1,0 +1,22 @@
+[project]
+name = "emeka-23cg034065-2303758-emotion-detection-web-app"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "flask>=3.1.2",
+    "gunicorn>=23.0.0",
+    "imgaug>=0.4.0",
+    "keras>=3.12.0",
+    "matplotlib>=3.10.7",
+    "numpy>=2.3.4",
+    "opencv-python>=4.11.0.86",
+    "pandas>=2.3.3",
+    "pillow>=12.0.0",
+    "python-dotenv>=1.2.1",
+    "scikit-learn>=1.7.2",
+    "seaborn>=0.13.2",
+    "tensorflow>=2.20.0",
+    "werkzeug>=3.1.3",
+]
